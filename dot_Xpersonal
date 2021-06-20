@@ -1,0 +1,89 @@
+! https://www.gnome-look.org/p/1172237/
+! Xcursor.size: 64
+! Xcursor.theme: screencast-oxy-red
+
+
+! urxvt
+
+!! For fake transparency, no longer needed? https://wiki.archlinux.org/index.php/Rxvt-unicode#Transparency_not_working_after_upgrade_to_v9.09
+!URxvt*.transparent: true
+!URxvt.inheritPixmap: true
+! 0 to 99 darkens, 101 to 200 lightens
+!URxvt*.shading: 110
+
+URxvt*buffered: true
+URxvt*cursorBlink: true
+URxvt*underlineColor: yellow
+URxvt*depth: 32
+URxvt*borderless: 1
+URxvt*scrollBar: false
+URxvt*loginShell: true
+URxvt*saveLines: 10000
+URxvt*termName: rxvt-unicode
+
+! do not scroll with output
+URxvt*scrollTtyOutput: false
+! scroll back to the bottom on keypress
+URxvt*scrollTtyKeypress: true
+
+! Scroll within pager, like less. Reverset these to scroll page
+URxvt.secondaryScreen: 1
+Urxvt*secondaryScroll: 0
+
+!! Extensions https://github.com/battlemidget/urxvt-perls
+URxvt.perl-ext-common: default,matcher,keyboard-select,clipboard,resize-font
+
+!! Keyboard select (Mod4 is Windows key)
+URxvt.keysym.Mod4-Escape: perl:keyboard-select:activate
+URxvt.keysym.Mod4-s: perl:keyboard-select:search
+
+!! URL select, but hot key does not seem to do anything (replaces matcher)
+!URxvt.keysym.Mod4-u: perl:url-select:search_next
+! Selected URLs are automatically copied to the PRIMARY buffer
+!URxvt.url-select.autocopy: true
+!URxvt.url-select.underline: true
+!URxvt.url-select.launcher: /usr/bin/xdg-open
+
+!! Clipboard
+URxvt.keysym.Mod4-c: perl:clipboard:copy
+URxvt.keysym.Mod4-v: perl:clipboard:paste
+URxvt.keysym.Mod4-C-v: perl:clipboard:paste_escaped
+URxvt.clipboard.autocopy: true
+URxvt.clipboard.copycmd: xclip -i -selection clipboard
+URxvt.clipboard.pastecmd: xclip -o -selection clipboard
+
+!! Make URLs clickable (replaces url-select)
+URxvt.url-launcher: /usr/bin/xdg-open
+URxvt.matcher.button: 1
+URxvt.keysym.C-Delete:  perl:matcher:last
+URxvt.keysym.M-Delete:  perl:matcher:list
+
+!! Change font size dynamically with urxvt-font-size-git
+!Ctrl++ (or Ctrl+Shift+=) to increase size
+!Ctrl+- to decrease size
+!Ctrl+= to reset size
+!Ctrl+? to see current size
+! Using old font size
+!URxvt.keysym.C-Up:     perl:font-size:increase
+!URxvt.keysym.C-Down:   perl:font-size:decrease
+!URxvt.keysym.C-S-Up:   perl:font-size:incglobal
+!URxvt.keysym.C-S-Down: perl:font-size:decglobal
+
+!! rofi settings
+! ------------------------------------------------------------------------------
+! ROFI Color theme
+! ------------------------------------------------------------------------------
+! https://github.com/carnager/rofi-themes
+rofi.color-enabled:                  true
+rofi.color-normal:                   argb:00000000, #819396, argb:00000000, #819396,#333
+rofi.color-urgent:                   argb:00000000, #f99, argb:00000000, #f99,#333
+rofi.color-active:                   argb:00000000, #aa1, argb:00000000, #aa1,#333
+rofi.color-window:                   argb:aa111111, #819396,#819396
+! Separator style (none, dash, solid)
+rofi.separator-style:                none
+
+rofi.modi:                           window,run,ssh
+rofi.font:                           haack 25
+rofi.bw:                             0
+rofi.padding:                        0
+

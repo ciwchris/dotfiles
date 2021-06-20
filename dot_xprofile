@@ -1,0 +1,63 @@
+#!/bin/sh
+#
+# ~/.xinitrc
+#
+# Executed by startx (run your window manager from here)
+
+if [ -d /etc/X11/xinit/xinitrc.d ]; then
+  for f in /etc/X11/xinit/xinitrc.d/*; do
+    [ -x "$f" ] && . "$f"
+  done
+  unset f
+fi
+
+# Start redshift
+pgrep redshift &> /dev/null || redshift &> /dev/null &
+
+# Set dvorak keyboard layout
+setxkbmap -layout dvorak
+
+# Turn off bell
+xset b off
+
+# For some reason this doesn't work in an external file. To be played with later.
+# [[ -f $HOME/.Xmodmap ]] && xmodmap $HOME/.Xmodmap
+# Make caps as control and escape at the same time. Based on super-caps by cmatheson.
+xmodmap -e "clear Lock"
+xmodmap -e "keysym Caps_Lock = Control_L"
+xmodmap -e "add Control = Control_L"
+xmodmap -e "add Lock = Caps_Lock"
+xmodmap -e "keycode 999 = Escape"
+
+# Map the Menu key to the PrtSc key
+xmodmap -e "keysym Print = Menu" 
+
+# Make the newly mapped Caps Lock key also be used as an Escape key.
+xcape -e "Control_L=Escape"
+
+# load Xdefaults/Xresources
+# Xdefaults is deprecated and somehow Xresources
+# isn't always loaded so we will load our own here
+ [[ -f $HOME/.Xpersonal ]] && xrdb -merge $HOME/.Xpersonal
+ [[ -f $HOME/.Xfont ]] && xrdb -merge $HOME/.Xfont
+# [[ -f $HOME/.bin/color-mode/set-color-mode.sh ]] && source $HOME/.bin/color-mode/set-color-mode.sh
+
+
+# Adjust display for screen resolution
+xrandr --dpi 200
+if [ "$GDMSESSION" == "i3" ]; then
+    # start xcompmgr so terminals have true transparency
+    xcompmgr -c &
+
+    [[ -f $HOME/.bin/rotate-background-image.sh ]] && $HOME/.bin/rotate-background-image.sh
+
+    # start urxvt daemon
+    urxvtd --quiet --opendisplay --fork &
+
+    # start rofi in daemon mode
+    rofi &
+
+    export GDK_SCALE=2
+else
+    unset GDK_SCALE
+fi

@@ -1,0 +1,14 @@
+# Move/copy to /etc/systemd/system/sleep.target.wants/
+[Unit]
+Description=Lock screen before suspend
+Before=sleep.target
+
+[Service]
+User=ciwchris
+Type=forking
+Environment=DISPLAY=:0
+ExecStart=/home/ciwchris/.bin/i3lock -p 15
+ExecStartPost=/bin/sleep 5
+
+[Install]
+WantedBy=suspend.target

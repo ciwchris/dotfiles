@@ -1,0 +1,97 @@
+#!/bin/zsh
+# dotfiles: collection of my personal dotfiles [code]
+# Copyright (C) 2012-2018 Aleksa Sarai <cyphar@cyphar.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+set -e -o pipefail
+
+lockimg="$(mktemp --tmpdir lockymi3-img.XXXXXX.png)"
+trap "rm -f $lockimg" EXIT
+
+# Output help page.
+function _help() {
+cat <<EOH
+usage: lockmyi3 [-gh] [-p <size=20>] [options]...
+Locks your screen with i3lock, using a pixelated version of the current screen
+as the background. The semantics of the "current screen" are borrowed from
+ImageMagick's 'import -screen -window root' options.
+Options:
+  -g           -- Switch-to-greeter after screen lock.
+  -p <size=20> -- Set the the size of each blocky pixel to <size> (in pixels).
+  options      -- Options that are passed through to i3lock.
+EOH
+}
+
+# Helper to calculate simple expressions.
+function _calc() {
+	bc -q <<<"$1"
+}
+
+# Get the options.
+local __block_size=20
+local __switch_to_greeter=
+while getopts "ghp:" __opt; do
+	case "$__opt" in
+		(g)
+			__switch_to_greeter=1
+			;;
+		(h)
+			_help
+			exit 0
+			;;
+		(p)
+			__block_size="${OPTARG}"
+			;;
+	esac
+done
+
+# Get pass-through options.
+shift $(_calc "${OPTIND}-1")
+
+# Gets the (width, height) of the screen.
+read __screen_x __screen_y <<<$(xrandr -q | awk '
+# xrandr tells us screen sizes.
+$1 == "Screen" {
+	# Line is of the form:
+	#   Screen 0: minimum 8 x 8, current 3840 x 1080, maximum 32767 x 32767
+	for (i = 1; i <= NF && $i != "current"; i++)
+		;
+	# We did not find "current".
+	if ($i != "current")
+		exit 1;
+	# Output the dimensions (there may be a trailing comma).
+	print $(i+1), $(i+3);
+	exit;
+}' | tr -d ,)
+
+# Calculate the "reduced" height and width for the down-scaling.
+local __reduced_x=$(_calc "${__screen_x}/${__block_size}")
+local __reduced_y=$(_calc "${__screen_y}/${__block_size}")
+
+# Actually do the locking. Since `convert -scale` doesn't do blurring, scaling
+# down and then back up is an efficient method of producing a pixelated image.
+import -screen -window root -silent png:- | \
+	convert png:- \
+		-scale '!'"${__reduced_x}x${__reduced_y}" \
+		-scale '!'"${__screen_x}x${__screen_y}" \
+		"png:$lockimg"
+i3lock $* -i "$lockimg"
+
+# Switch greeters if we have been asked to. There isn't really a nice way of
+# doing this that is agnostic to DM (since gdmflexiserver is GNOME specific).
+# So we just use dm-tool -- screw it. Note that dm-tool is *not* secure (the
+# tty is just switched -- your old session is trivially accessible) and you
+# must always pair it with i3lock.
+[[ "$__switch_to_greeter" ]] && dm-tool switch-to-greeter

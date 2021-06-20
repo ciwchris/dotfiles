@@ -1,0 +1,32 @@
+theme = "gruvbox-dark"
+icons = "awesome5"
+
+[[block]]
+block = "pomodoro"
+length = 25
+break_length = 5
+message = "Take a break!"
+break_message = "Back to work!"
+use_nag = true
+nag_path = "i3-nagbar"
+
+[[block]]
+block = "networkmanager"
+on_click = "alacritty -e nmtui"
+ap_format = "{ssid} {strength}%"
+device_format = "{icon} {ap}"
+
+[[block]]
+block = "battery"
+interval = 60
+format = "{percentage}% {time}"
+
+
+[[block]]
+block = "sound"
+
+[[block]]
+block = "time"
+interval = 60
+format = "%a %d %R"
+

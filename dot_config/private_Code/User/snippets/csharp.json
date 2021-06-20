@@ -1,0 +1,123 @@
+{
+	/*
+	// Place your snippets for C# here. Each snippet is defined under a snippet name and has a prefix, body and 
+	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
+	// same ids are connected.
+	// Example:
+	"Print to console": {
+		"prefix": "log",
+		"body": [
+			"console.log('$1');",
+			"$2"
+		],
+		"description": "Log output to console"
+	}
+*/
+	"MeditaR_Startup": {
+		"prefix": "mstartup",
+		"body": [
+			"services.AddMediatR();$0"
+		],
+		"description": "Adds MediatR to ConfigureServices"
+	},
+	"MeditaR_Request": {
+		"prefix": "mreq",
+		"body": [
+			"public class $1 : IRequest<$2> { }",
+			"",
+			"public class $1Handler : IRequestHandler<$1, $2>",
+			"{",
+			"\tpublic Task<$2> Handle($1 request, CancellationToken cancellationToken)",
+			"\t{",
+			"\t\treturn Task.FromResult(\"Request response\");",
+			"\t}",
+			"}",
+			"$0"
+		],
+		"description": "Scafolds sample MediatR query request"
+	},
+	"MeditaR_Notification": {
+		"prefix": "mnoti",
+		"body": [
+			"public class $1Event : INotification { }",
+			"",
+			"public class $1Handler : INotificationHandler<$1Event>",
+			"{",
+			"\tpublic Task Handle($1Event notification, CancellationToken cancellationToken)",
+			"\t{",
+			"\t\treturn Task.CompletedTask;",
+			"\t}",
+			"}",
+			"$0"
+		],
+		"description": "Scafolds sample MediatR command notification"
+	},
+	"MeditaR_Constructor": {
+		"prefix": "mconst",
+		"body": [
+			"private readonly IMediator mediator;",
+			"",
+			"public $1Controller(IMediator mediator)",
+			"{",
+			"\tthis.mediator = mediator;",
+			"}",
+			"$0"
+		],
+		"description": "Creates controller constructor with MediatR dependency"
+	},
+	"MeditaR_Use_Request": {
+		"prefix": "mrequ",
+		"body": [
+			"var response = await mediator.Send(new $1());",
+			"$0"
+		],
+		"description": "Sends a MediatR request"
+	},
+	"MeditaR_Use_Notification": {
+		"prefix": "mnotiu",
+		"body": [
+			"await mediator.Publish(new $1());",
+			"$0"
+		],
+		"description": "Sends a MediatR request"
+	},
+	"MeditaR_Register_Pipeline": {
+		"prefix": "mpipestartup",
+		"body": [
+			"services.AddScoped(typeof(IPipelineBehavior<,>), typeof(GenericPipelineBehavior<,>));",
+			"$0"
+		],
+		"description": "Registers pipeline in startup"
+	},
+	"MeditaR__Pipeline": {
+		"prefix": "mpipe",
+		"body": [
+			"public class GenericPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>",
+			"{",
+			"\tpublic async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)",
+			"\t{",
+			"\t\tvar before = \"do someing before a request\";",
+			"\t\tvar response = await next();",
+			"\t\tvar after = \"do something after a request\";",
+			"\t\treturn response;",
+			"\t}",
+			"}",
+			"$0"
+		],
+		"description": "Create request pipeline"
+	},
+	"Controller_GET_Action": {
+		"prefix": "ctrlg",
+		"body": [
+			"[HttpGet]",
+			"public async Task<IEnumerable<string>> Get()",
+			"{",
+			"\treturn new string[] {",
+			"\t};",
+			"}",
+			"$0"
+		],
+		"description": "Create request pipeline"
+	}
+}
